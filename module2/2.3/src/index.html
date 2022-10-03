@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau</title>
+    <link rel="icon" href="./img/favicon.svg" type="image/svg+xml" />
+  </head>
+
+  <body>
+    <header></header>
+    <main>
+      <form id="tableForm">
+        <div class="mb-3">
+          <label for="nbLignes" class="form-label">Nombre de lignes</label>
+          <input type="number" class="form-control" id="nbLignes" />
+        </div>
+
+        <div class="mb-3">
+          <label for="nbCol" class="form-label">Nombre de colonnes</label>
+          <input type="number" class="form-control" id="nbCol" />
+        </div>
+
+        <div class="mb-3">
+          <label for="stringTable" class="form-label">Texte</label>
+          <input type="text" class="form-control" id="stringTable" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Table</button>
+      </form>
+      <div id="tableHTML"></div>
+    </main>
+    <footer></footer>
+  </body>
+</html>
