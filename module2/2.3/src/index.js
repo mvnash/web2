@@ -2,16 +2,25 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './stylesheets/main.css';
 
-const inputLigne = document.getElementById('#nbLignes');
-const inputCol = document.getElementById('#nbCol');
-const inputText = document.getElementById('#stringTable');
+let inputLigne;
+let inputCol;
+let inputText;
 
-console.log(inputLigne);
-console.log(inputCol);
-console.log(inputText);
+const tableDuForm = document.querySelector('#tableForm');
+tableDuForm.addEventListener('submit', onSubmit);
 
-const tableauCree = createArray(inputLigne, inputCol, inputText);
-createHtmlTableAsString(tableauCree);
+function onSubmit(e) {
+  inputLigne = document.getElementById('nbLignes');
+  inputCol = document.getElementById('nbCol');
+  inputText = document.getElementById('stringTable');
+  const tableauCree = createArray(inputLigne.value, inputCol.value, inputText.value);
+  createHtmlTableAsString(tableauCree);
+  console.log(inputLigne.value);
+  console.log(inputCol.value);
+  console.log(inputText.value);
+  console.log('ici');
+  e.preventDefault();
+}
 
 function createArray(nbDeLignes, nbDeColonnes, texte) {
   const tableau = new Array(nbDeLignes);
@@ -20,7 +29,7 @@ function createArray(nbDeLignes, nbDeColonnes, texte) {
     tableau[i] = new Array(nbDeColonnes);
 
     for (let j = 0; j < nbDeColonnes; j += 1) {
-      tableau[i][j].innerText = `${texte}[${i}][${j}]`;
+      tableau[i][j] = `${texte}[${i}][${j}]`;
     }
   }
 
@@ -31,24 +40,14 @@ function createHtmlTableAsString(array) {
   let mytable = '<table>';
 
   // eslint-disable-next-line no-restricted-syntax
-  for (let i = 0 ; i<inputLigne;i+=1) {
-    mytable += `<tr>`;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const cell of array) {
-      mytable += `<td>${cell}</td>`;
-    }
-    mytable += `</tr>`;
+
+  mytable += `<tr>`;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const cell of array) {
+    mytable += `<td>${cell}</td>`;
   }
+  mytable += `</tr>`;
 
   mytable += '</table>';
-  document.getElementById('#tableHTML').innerHTML = mytable;
+  document.getElementById('tableHTML').innerHTML += mytable;
 }
-
-const tableDuForm = document.querySelector("#tableForm");
-
-function onSubmit(e) {
-    e.preventDefault();
-}
-  
-tableDuForm.addEventListener("submit", onSubmit);
-  
