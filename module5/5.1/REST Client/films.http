@@ -1,0 +1,45 @@
+### Read all films
+
+@baseUrl = http://localhost:3000
+GET {{baseUrl}}/films
+
+
+### Read all films
+
+GET {{baseUrl}}/films?minimum-duration=120
+
+### Create a pizza
+POST {{baseUrl}}/films
+Content-Type: application/json
+
+{
+    "title":"Magic Green",
+    "duration":77,
+    "budget":1564646,
+    "link":"oui"
+}
+
+### Create a pizza which lacks a property
+POST {{baseUrl}}/films
+
+
+Content-Type: application/json
+
+{
+    "content":"Epinards, Brocolis, Olives vertes, Basilic"
+}
+
+
+### Delete pizza identified by 2
+DELETE {{baseUrl}}/films/2
+
+### Update the pizza identified by 6
+PATCH {{baseUrl}}/films/6
+Content-Type: application/json
+
+{
+    "title":"Magic Green 2",
+    "duration":144,
+    "budget":5446,
+    "link":"pqjpiuhfqizq"
+}
