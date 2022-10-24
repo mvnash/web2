@@ -42,19 +42,19 @@ const MOVIES = [
 ];
 
 function readAllFilms(minimum) {
-    let filter;
-    if(minimum){
-        filter = minimum
-    }
-    let filtredMovies;
-    console.log(`minimum value : ${filter ?? 'not requested'}`);
-  
-    const films = parse(jsonDbPath, MOVIES);
-  
-    if (filter) filtredMovies = [...films].filter((movie) => movie.duration > filter);
-  
-    console.log('GET /pizzas');
-    res.json(filtredMovies ?? films);
+  let filter;
+  if (minimum) {
+    filter = minimum;
+  }
+  let filtredMovies;
+  console.log(`minimum value : ${filter ?? 'not requested'}`);
+
+  const films = parse(jsonDbPath, MOVIES);
+
+  if (filter) filtredMovies = [...films].filter((movie) => movie.duration > filter);
+
+  console.log('GET /pizzas');
+  return filtredMovies ?? films
 }
 
 function readOneFilm(id) {
@@ -66,7 +66,7 @@ function readOneFilm(id) {
   return films[indexOfFilmFound];
 }
 
-function createOneFilm(title, duration,budget,link) {
+function createOneFilm(title, duration, budget, link) {
   const films = parse(jsonDbPath, MOVIES);
 
   const createdFilm = {
@@ -74,7 +74,7 @@ function createOneFilm(title, duration,budget,link) {
     title,
     duration,
     budget,
-    link
+    link,
   };
 
   films.push(createdFilm);
