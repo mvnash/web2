@@ -1,7 +1,7 @@
 {
-  "name": "frontend-essentials-step2",
+  "name": "frontend-essentials-basic-fetch",
   "version": "1.0.0",
-  "description": "Structuration du code en modules et pages statiques",
+  "description": "SPA : Consommation d'opérations non protégées de la RESTful API grâce à un proxy",
   "scripts": {
     "dev": "webpack --mode development",
     "build": "webpack --mode production",

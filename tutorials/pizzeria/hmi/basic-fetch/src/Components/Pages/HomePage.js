@@ -21,7 +21,7 @@ const DRINKS = [
 const HomePage = () => {
   clearPage();
 
-  fetch('http://localhost:3000/pizzas')
+  fetch('/api/pizzas')
     .then((response) => {
       if (!response.ok) throw new Error(`fetch error : ${response.status} : ${response.statusText}`);
       return response.json();
@@ -34,10 +34,6 @@ const HomePage = () => {
     .catch((err) => {
       console.error('HomePage::error: ', err);
     });
-
-  attachOnMouseEventsToGoGreen();
-
-  renderDrinksFromNodes(DRINKS);
 };
 
 function renderMenuFromString(menu) {
@@ -57,7 +53,7 @@ function getMenuTableAsString(menu) {
 function addLinesToTableHeadersAndGet(tableLines) {
   const menuTable = `
   <div class="table-responsive pt-5">
-    <table class="table table-danger">
+    <table class="table table-danger menu">
       <tr>
         <th>Pizza</th>
         <th>Description</th>
