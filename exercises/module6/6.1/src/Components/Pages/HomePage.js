@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { clearPage } from '../../utils/render';
 
 const HomePage = async () => {
