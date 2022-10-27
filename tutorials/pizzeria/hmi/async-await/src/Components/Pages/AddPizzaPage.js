@@ -1,4 +1,5 @@
 import { clearPage, renderPageTitle } from '../../utils/render';
+import Navigate from '../Router/Navigate';
 
 const AddPizzaPage = () => {
   clearPage();
@@ -30,6 +31,35 @@ function renderAddPizzaForm() {
   form.appendChild(content);
   form.appendChild(submit);
   main.appendChild(form);
+  form.addEventListener('submit', onAddPizza);
+}
+
+async function onAddPizza(e) {
+  e.preventDefault();
+
+  const title = document.querySelector('#title').value;
+  const content = document.querySelector('#content').value;
+
+  const options = {
+    method: 'POST',
+    body: JSON.stringify({
+      title,
+      content,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const response = await fetch('/api/pizzas', options); // fetch return a promise => we wait for the response
+
+  if (!response.ok) throw new Error(`fetch error : ${response.status} : ${response.statusText}`);
+
+  const newPizza = await response.json(); // json() returns a promise => we wait for the data
+
+  console.log('New pizza added : ', newPizza);
+
+  Navigate('/');
 }
 
 export default AddPizzaPage;

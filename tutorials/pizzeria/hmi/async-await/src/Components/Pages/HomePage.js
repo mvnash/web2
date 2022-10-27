@@ -36,7 +36,6 @@ const HomePage = async () => {
   }
 };
 
-
 function renderMenuFromString(menu) {
   const menuTableAsString = getMenuTableAsString(menu);
 
