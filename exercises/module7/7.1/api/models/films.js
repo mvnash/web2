@@ -3,47 +3,43 @@ const { parse, serialize } = require('../utils/json');
 
 const jsonDbPath = path.join(__dirname, '/../data/films.json');
 
-function readAllFilms(minimum) {
-  let filter;
-  if (minimum) {
-    filter = minimum;
-  }
-  let filtr;
-  console.log(`minimum value : ${filter ?? 'not requested'}`);
-
+function readAllFilms(minimumDuration) {
   const films = parse(jsonDbPath);
 
-  if (filter) filtr = [...films].filter((movie) => movie.duration > filter);
+  if (minimumDuration === undefined) return films;
 
-  console.log('GET /pizzas');
-  return filtr ?? films
+  const minimumDurationAsNumber = parseInt(minimumDuration, 10);
+  if (Number.isNaN(minimumDurationAsNumber) || minimumDurationAsNumber < 0) return undefined;
+
+  const filmsReachingMinimumDuration = films.filter((film) => film.duration >= minimumDuration);
+  return filmsReachingMinimumDuration;
 }
 
 function readOneFilm(id) {
-  const idNumber = parseInt(id, 10);
+  const idAsNumber = parseInt(id, 10);
   const films = parse(jsonDbPath);
-  const indexOfFilmFound = films.findIndex((film) => film.id === idNumber);
+  const indexOfFilmFound = films.findIndex((pizza) => pizza.id === idAsNumber);
   if (indexOfFilmFound < 0) return undefined;
 
   return films[indexOfFilmFound];
 }
 
-function createOneFilm(title, duration, budget, link) {
+function createOneFilm(title, link, duration, budget) {
   const films = parse(jsonDbPath);
 
-  const createdFilm = {
+  const createdPizza = {
     id: getNextId(),
     title,
+    link,
     duration,
     budget,
-    link,
   };
 
-  films.push(createdFilm);
+  films.push(createdPizza);
 
   serialize(jsonDbPath, films);
 
-  return createdFilm;
+  return createdPizza;
 }
 
 function getNextId() {
@@ -56,9 +52,9 @@ function getNextId() {
 }
 
 function deleteOneFilm(id) {
-  const idNumber = parseInt(id, 10);
+  const idAsNumber = parseInt(id, 10);
   const films = parse(jsonDbPath);
-  const foundIndex = films.findIndex((film) => film.id === idNumber);
+  const foundIndex = films.findIndex((pizza) => pizza.id === idAsNumber);
   if (foundIndex < 0) return undefined;
   const deletedFilms = films.splice(foundIndex, 1);
   const deletedFilm = deletedFilms[0];
@@ -68,18 +64,18 @@ function deleteOneFilm(id) {
 }
 
 function updateOneFilm(id, propertiesToUpdate) {
-  const idNumber = parseInt(id, 10);
+  const idAsNumber = parseInt(id, 10);
   const films = parse(jsonDbPath);
-  const foundIndex = films.findIndex((film) => film.id === idNumber);
+  const foundIndex = films.findIndex((pizza) => pizza.id === idAsNumber);
   if (foundIndex < 0) return undefined;
 
-  const updatedFilm = { ...films[foundIndex], ...propertiesToUpdate };
+  const updatedPizza = { ...films[foundIndex], ...propertiesToUpdate };
 
-  films[foundIndex] = updatedFilm;
+  films[foundIndex] = updatedPizza;
 
   serialize(jsonDbPath, films);
 
-  return updatedFilm;
+  return updatedPizza;
 }
 
 module.exports = {

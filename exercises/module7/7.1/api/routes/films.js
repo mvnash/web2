@@ -1,113 +1,81 @@
 const express = require('express');
-const { serialize, parse } = require('../utils/json');
+const {
+  readAllFilms,
+  readOneFilm,
+  createOneFilm,
+  deleteOneFilm,
+  updateOneFilm,
+} = require('../models/films');
+const { authorize } = require('../utils/auths');
 
 const router = express.Router();
 
-const jsonDbPath = `${__dirname}/../data/films.json`;
-
-/* Read all the movies from the menu
- */
+// Read all the films, filtered by minimum-duration if the query param exists
 router.get('/', (req, res) => {
-  const filter = req?.query?.['minimum-duration'] ? req?.query?.['minimum-duration'] : undefined;
-  let filtredMovies;
-  console.log(`minimum value : ${filter ?? 'not requested'}`);
+  const filmsPotentiallyFiltered = readAllFilms(req?.query?.['minimum-duration']);
 
-  const films = parse(jsonDbPath);
+  if (filmsPotentiallyFiltered === undefined) return res.sendStatus(400);
 
-  if (filter) filtredMovies = [...films].filter((movie) => movie.duration > filter);
-
-  console.log('GET /pizzas');
-  res.json(filtredMovies ?? films);
+  return res.json(filmsPotentiallyFiltered);
 });
 
-// Read the pizza identified by an id in the menu
+// Read a film from its id in the menu
 router.get('/:id', (req, res) => {
-  console.log(`GET /movies/${req.params.id}`);
+  const foundFilm = readOneFilm(req?.params?.id);
 
-  const films = parse(jsonDbPath);
+  if (!foundFilm) return res.sendStatus(404);
 
-  const indexOfMoviesFound = films.findIndex((movies) => movies.id === req.params.id);
-
-  if (indexOfMoviesFound < 0) return res.sendStatus(404);
-
-  return res.json(films[indexOfMoviesFound]);
+  return res.json(foundFilm);
 });
 
-// Create a pizza to be added to the menu.
-router.post('/', (req, res) => {
-  const title = req?.body?.title?.length !== 0 ? req.body.title : undefined;
-  const duration = typeof req?.body?.duration === 'number' ? req.body.duration : undefined;
-  const budget = typeof req?.body?.budget === 'number' ? req.body.budget : undefined;
-  const link = typeof req?.body?.link === 'string' ? req.body.link : undefined;
+// Create a film
+router.post('/', authorize, (req, res) => {
+  const title = req?.body?.title?.trim()?.length !== 0 ? req.body.title : undefined;
+  const link = req?.body?.content?.trim().length !== 0 ? req.body.link : undefined;
+  const duration =
+    typeof req?.body?.duration !== 'number' || req.body.duration < 0
+      ? undefined
+      : req.body.duration;
+  const budget =
+    typeof req?.body?.budget !== 'number' || req.body.budget < 0 ? undefined : req.body.budget;
 
-  console.log('POST /pizzas');
+  if (!title || !link || !duration || !budget) return res.sendStatus(400);
 
-  if (!title || !duration || !budget || !link) return res.sendStatus(400); // error code '400 Bad request'
+  const createdFilm = createOneFilm(title, link, duration, budget);
 
-  const films = parse(jsonDbPath);
-  const lastItemIndex = films?.length !== 0 ? films.length - 1 : undefined;
-  const lastId = lastItemIndex !== undefined ? films[lastItemIndex]?.id : 0;
-  const nextId = lastId + 1;
-
-  const newMovie = {
-    id: nextId,
-    title,
-    duration,
-    budget,
-    link,
-  };
-
-  films.push(newMovie);
-
-  serialize(jsonDbPath, films);
-
-  return res.json(newMovie);
+  return res.json(createdFilm);
 });
 
-// Delete a pizza from the menu based on its id
-router.delete('/:id', (req, res) => {
-  console.log(`DELETE /movies/${req.params.id}`);
+// Delete a film
+router.delete('/:id', authorize, (req, res) => {
+  const deletedFilm = deleteOneFilm(req?.params?.id);
 
-  const films = parse(jsonDbPath);
+  if (!deletedFilm) return res.sendStatus(404);
 
-  const foundIndex = films.findIndex((movie) => movie.id === req.params.id);
-
-  if (foundIndex < 0) return res.sendStatus(404);
-
-  const itemsRemovedFromMenu = films.splice(foundIndex, 1);
-  const itemRemoved = itemsRemovedFromMenu[0];
-
-  serialize(jsonDbPath, films);
-
-  return res.json(itemRemoved);
+  return res.json(deletedFilm);
 });
 
-// Update a pizza based on its id and new values for its parameters
-router.patch('/:id', (req, res) => {
-  console.log(`PATCH /films/${req.params.id}`);
-
+// Update a film identified by its id
+router.patch('/:id', authorize, (req, res) => {
   const title = req?.body?.title;
+  const link = req?.body?.link;
   const duration = req?.body?.duration;
   const budget = req?.body?.budget;
-  const link = req?.body?.link;
 
-  console.log('POST /films');
+  if (
+    !req.body ||
+    (title && !title.trim()) ||
+    (link && !link.trim()) ||
+    (duration && (typeof req?.body?.duration !== 'number' || duration < 0)) ||
+    (budget && (typeof req?.body?.budget !== 'number' || budget < 0))
+  )
+    return res.sendStatus(400);
 
-  if ((!title && !duration) || !budget || !link || title?.length === 0) return res.sendStatus(400);
+  const updatedFilm = updateOneFilm(req?.params?.id, req?.body);
 
-  const films = parse(jsonDbPath);
+  if (!updatedFilm) return res.sendStatus(404);
 
-  const foundIndex = films.findIndex((movie) => movie.id === req.params.id);
-
-  if (foundIndex < 0) return res.sendStatus(404);
-
-  const updatedMovie = { ...films[foundIndex], ...req.body };
-
-  films[foundIndex] = updatedMovie;
-
-  serialize(jsonDbPath, films);
-  
-  return res.json(updatedMovie);
+  return res.json(updatedFilm);
 });
 
 module.exports = router;
